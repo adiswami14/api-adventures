@@ -1,0 +1,126 @@
+{
+  "rooms": [
+    {
+      "name": "Bedroom",
+      "items": [
+        {
+          "name": "LeBron jersey"
+        },
+        {
+          "name": "MacBook pro"
+        }
+      ],
+      "directions": [
+        {
+          "name": "Down the hallway",
+          "connectingRoom": "Bathroom"
+        },
+        {
+          "name": "Downstairs",
+          "connectingRoom": "Kitchen"
+        },
+        {
+          "name": "Upstairs",
+          "connectingRoom": "Attic"
+        }
+      ]
+    },
+    {
+      "name": "Bathroom",
+      "items": [
+        {
+          "name": "Shaving cream"
+        },
+        {
+          "name": "Toothbrush"
+        },
+        {
+          "name": "Toothpaste"
+        }
+      ],
+      "directions": [
+        {
+          "name": "Downstairs",
+          "connectingRoom": "Kitchen"
+        },
+        {
+          "name": "Back down the hallway",
+          "connectingRoom": "Bedroom"
+        }
+      ]
+    },
+    {
+      "name": "Attic",
+      "items": [
+        {
+          "name": "Old cassette"
+        },
+        {
+          "name": "Old clothes"
+        },
+        {
+          "name": "Chainsaw"
+        }
+      ],
+      "directions": [
+        {
+          "name": "Downstairs",
+          "connectingRoom": "Bedroom"
+        }
+      ]
+    },
+    {
+      "name": "Kitchen",
+      "items": [
+        {
+          "name": "Banana"
+        },
+        {
+          "name": "Frying pan"
+        },
+        {
+          "name": "Cereal"
+        }
+      ],
+      "directions": [
+        {
+          "name": "To the living room",
+          "connectingRoom": "Living Room"
+        },
+        {
+          "name": "Upstairs",
+          "connectingRoom": "Bedroom"
+        }
+      ]
+    },
+    {
+      "name": "Living Room",
+      "items": [
+        {
+          "name": "Handgun"
+        }
+      ],
+      "directions": [
+        {
+          "name": "Downstairs",
+          "connectingRoom": "Basement"
+        },
+        {
+          "name": "To the kitchen",
+          "connectingRoom": "Kitchen"
+        },
+        {
+          "name": "Upstairs",
+          "connectingRoom": "Bedroom"
+        }
+      ]
+    },
+    {
+      "name": "Basement",
+      "items": [
+      ],
+      "directions": [
+      ]
+    }
+  ]
+}

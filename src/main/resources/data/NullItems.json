@@ -1,0 +1,84 @@
+{
+  "rooms": [
+    {
+      "name": "Bedroom",
+      "description": "You are in your bedroom. You can see the bathroom down the hallway.",
+      "directions": [
+        {
+          "name": "Down the hallway",
+          "connectingRoom": "Bathroom"
+        },
+        {
+          "name": "Downstairs",
+          "connectingRoom": "Kitchen"
+        },
+        {
+          "name": "Upstairs",
+          "connectingRoom": "Attic"
+        }
+      ]
+    },
+    {
+      "name": "Bathroom",
+      "description": "Time to freshen up! Long day ahead!",
+      "directions": [
+        {
+          "name": "Downstairs",
+          "connectingRoom": "Kitchen"
+        },
+        {
+          "name": "Back down the hallway",
+          "connectingRoom": "Bedroom"
+        }
+      ]
+    },
+    {
+      "name": "Attic",
+      "description": "Who actually goes to the attic? Are you a horror movie character?",
+      "directions": [
+        {
+          "name": "Downstairs",
+          "connectingRoom": "Bedroom"
+        }
+      ]
+    },
+    {
+      "name": "Kitchen",
+      "description": "Something's off. The kitchen is eerily quiet. Anyway, time to eat!",
+      "directions": [
+        {
+          "name": "To the living room",
+          "connectingRoom": "Living Room"
+        },
+        {
+          "name": "Upstairs",
+          "connectingRoom": "Bedroom"
+        }
+      ]
+    },
+    {
+      "name": "Living Room",
+      "description": "As you walk into your living room, you see a gun and a bloodstain on the ground. Hmm, strange.",
+      "directions": [
+        {
+          "name": "Downstairs",
+          "connectingRoom": "Basement"
+        },
+        {
+          "name": "To the kitchen",
+          "connectingRoom": "Kitchen"
+        },
+        {
+          "name": "Upstairs",
+          "connectingRoom": "Bedroom"
+        }
+      ]
+    },
+    {
+      "name": "Basement",
+      "description": "You hear muffled screaming from the basement. As you round the stairs, you die! Game over!",
+      "directions": [
+      ]
+    }
+  ]
+}
