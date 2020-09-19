@@ -3,10 +3,10 @@ package student.adventure;
 import java.util.ArrayList;
 
 public class Player {
-    private String name;
-    private Room currentRoom;
-    private ArrayList<Item> inventory;
-    private ArrayList<String> roomHistory;
+    private String name; //name of the player
+    private Room currentRoom; //currentRoom of the player
+    private ArrayList<Item> inventory; //list of items the player possesses
+    private ArrayList<String> roomHistory; //history of rooms player has traversed
 
     public Player(String name) {
         if(name == null || name.replaceAll(" ", "").isEmpty()) {
@@ -49,6 +49,9 @@ public class Player {
         return inventory;
     }
 
+    /**
+     * @return history of rooms the Player has traversed
+     */
     public ArrayList<String> getRoomHistory() {
         return roomHistory;
     }

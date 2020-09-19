@@ -1,11 +1,11 @@
 package student.adventure;
 
 public class Item {
-    private String name;
+    private String name; //name of the item
 
-    public Item() {
-    }
-
+    /**
+     * @return the name of the item
+     */
     public String getName() {
         return name;
     }

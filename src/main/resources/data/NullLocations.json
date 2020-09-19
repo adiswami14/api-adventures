@@ -3,6 +3,7 @@
     {
       "name": "Bedroom",
       "description": "You are in your bedroom. You can see the bathroom down the hallway.",
+      "isEndingRoom": false,
       "items": [
         {
           "name": "LeBron jersey"
@@ -29,6 +30,7 @@
     {
       "name": "Bathroom",
       "description": "Time to freshen up! Long day ahead!",
+      "isEndingRoom": false,
       "items": [
         {
           "name": "Shaving cream"
@@ -54,6 +56,7 @@
     {
       "name": "Attic",
       "description": "Who actually goes to the attic? Are you a horror movie character?",
+      "isEndingRoom": false,
       "items": [
         {
           "name": "Old cassette"
@@ -75,6 +78,7 @@
     {
       "name": "Kitchen",
       "description": "Something's off. The kitchen is eerily quiet. Anyway, time to eat!",
+      "isEndingRoom": false,
       "items": [
         {
           "name": "Banana"
@@ -100,6 +104,7 @@
     {
       "name": "Living Room",
       "description": "As you walk into your living room, you see a gun and a bloodstain on the ground. Hmm, strange.",
+      "isEndingRoom": false,
       "items": [
         {
           "name": "Handgun"
@@ -123,6 +128,7 @@
     {
       "name": "Basement",
       "description": "You hear muffled screaming from the basement. As you round the stairs, you die! Game over!",
+      "isEndingRoom": true,
       "items": [
       ],
       "directions": [

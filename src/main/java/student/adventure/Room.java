@@ -5,15 +5,13 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 
 public class Room {
-    private String name;
-    private String description;
-    private ArrayList<Item> items;
+    private String name; //name of the Room
+    private String description; //sentence describing this Room object
+    private boolean isEndingRoom; //boolean on whether this Room object ends the game or not
+    private ArrayList<Item> items; //list of items in the room
     @SerializedName("directions")
-    private ArrayList<Direction> possibleDirections;
-    private Location location;
-
-    public Room() {
-    }
+    private ArrayList<Direction> possibleDirections; //possible directions available to Player from this Room
+    private Location location; //Location instance of the room
 
     /**
      * @return the name of the Room
@@ -63,5 +61,12 @@ public class Room {
             throw new IllegalArgumentException();
         }
         return location;
+    }
+
+    /**
+     * @return whether this specific Room object is the ending room of the game
+     */
+    public boolean isEndingRoom() {
+        return isEndingRoom;
     }
 }

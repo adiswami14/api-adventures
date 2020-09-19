@@ -1,11 +1,8 @@
 package student.adventure;
 
 public class Location {
-    private int x;
-    private int y;
-
-    public Location() {
-    }
+    private int x; //x-coordinate of location
+    private int y; //y-coordinate of location
 
     /**
      * @return the x-value of the Location

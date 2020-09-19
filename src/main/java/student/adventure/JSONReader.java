@@ -1,14 +1,19 @@
 package student.adventure;
 
+import com.google.gson.Gson;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import com.google.gson.Gson;
-
 public class JSONReader {
-    private Game game;
+    private Game game; //wrapper class instance for deserialization
 
+    /**
+     * Reads JSON file given as parameter, and deserializes it through Gson
+     * @param file the file given to be parsed
+     * @throws IOException
+     */
     public JSONReader(File file) throws IOException {
         if(file == null) {
             throw new NullPointerException();

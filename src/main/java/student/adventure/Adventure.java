@@ -3,15 +3,18 @@ package student.adventure;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Runner {
-    private Scanner scanner;
-    private Player player;
-    private Game game;
-    private Room currentRoom;
+public class Adventure {
+    private Scanner scanner; //scanner for the game
+    private Player player;  //Player object of this game
+    private ArrayList<Room> rooms;  //list of rooms in the game
+    private Room currentRoom; //current Room that Player is in, used for brevity
 
-    public Runner(Game game) {
+    /**
+     * @param game instance of Game wrapper class, used to extract list of rooms
+     */
+    public Adventure(Game game) {
         scanner = new Scanner(System.in);
-        this.game = game;
+        this.rooms = game.getRooms();
     }
 
     /**
@@ -26,11 +29,11 @@ public class Runner {
      */
     public void run(){
         initializePlayer();
+        examine(currentRoom);   //get description of the room you start of in
         while(!isGameOver()) {
-            checkUserInput(scanner.nextLine());
+            handleUserInput(scanner.nextLine());
         }
-        System.out.println(currentRoom.getDescription());  //just to get description of the last room
-        terminate();
+        System.out.println(currentRoom.getDescription());  //get description of the last room
     }
 
     /**
@@ -41,11 +44,9 @@ public class Runner {
 
         player = new Player(scanner.nextLine().trim());
         System.out.print("Hey, "+player.getName()+"! ");
-        player.setCurrentRoom(game.getRooms().get(0));
+        player.setCurrentRoom(rooms.get(0));
         currentRoom = player.getCurrentRoom();
         player.getRoomHistory().add(currentRoom.getName()); //adds starting room to room history
-
-        examine(currentRoom);   //just to get description of the room you start of in
     }
 
     /**
@@ -67,6 +68,7 @@ public class Runner {
     private void examineDirections(Room room) {
         System.out.println(room.getDescription());  //String we will return for this method
         System.out.print("From here, you can go: ");
+
         ArrayList<Direction> directionsInRoom = room.getPossibleDirections();
 
         for(int directionIndex = 0; directionIndex<directionsInRoom.size();directionIndex++) {
@@ -99,7 +101,7 @@ public class Runner {
      * Runs certain functions according to the string passed in
      * @param userInput the input string the user passes in at certain points of the game
      */
-    private void checkUserInput(String userInput) {
+    private void handleUserInput(String userInput) {
         String[] strInput = Utils.formatString(userInput).split(" ");
         String command = strInput[0];
         String subject = Utils.formatString(Utils.joinStringArray(strInput, 1, strInput.length));
@@ -144,7 +146,7 @@ public class Runner {
             if(direction.getName().toLowerCase().equals(directionName.toLowerCase())) {
                 //checks lowercase in all command methods because we want to be able to print out exactly
                 //what the user said, instead of altering the command and/or subject string
-                for(Room room : game.getRooms()) {
+                for(Room room : rooms) {
                     if(direction.getConnectingRoom().equals(room.getName())) {
                         player.setCurrentRoom(room);
                         currentRoom = player.getCurrentRoom();
@@ -209,7 +211,7 @@ public class Runner {
     private void distanceTo(String roomName) {
         Location currentLoc = currentRoom.getLocation();
 
-        for(Room room : game.getRooms()) {
+        for(Room room : rooms) {
             if(room.getName().toLowerCase().equals(roomName.toLowerCase())) {
                 System.out.println("The distance between the current room and the "+roomName+" is "
                         +Utils.findDistance(currentLoc, room.getLocation())+" meters");
@@ -225,14 +227,14 @@ public class Runner {
      * @return whether the game is over
      */
     private boolean isGameOver() {
-        return (currentRoom.getName().equals("Basement"));
+        return (currentRoom.isEndingRoom());
     }
 
     /**
      * Method for quitting the program
      * Seems unnecessary, but it improves readability
      */
-    private void terminate() {
+    public void terminate() {
         System.exit(0);
     }
 }

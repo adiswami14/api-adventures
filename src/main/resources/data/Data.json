@@ -3,6 +3,7 @@
     {
       "name": "Bedroom",
       "description": "You are in your bedroom. You can see the bathroom down the hallway.",
+      "isEndingRoom": false,
       "location": {
         "x": 0,
         "y": 0
@@ -33,6 +34,7 @@
     {
       "name": "Bathroom",
       "description": "Time to freshen up! Long day ahead!",
+      "isEndingRoom": false,
       "location": {
         "x": 5,
         "y": 0
@@ -62,6 +64,7 @@
     {
       "name": "Attic",
       "description": "Who actually goes to the attic? Are you a horror movie character?",
+      "isEndingRoom": false,
       "location": {
         "x": 0,
         "y": -5
@@ -87,6 +90,7 @@
     {
       "name": "Kitchen",
       "description": "Something's off. The kitchen is eerily quiet. Anyway, time to eat!",
+      "isEndingRoom": false,
       "location": {
         "x": 10,
         "y": 5
@@ -116,6 +120,7 @@
     {
       "name": "Living Room",
       "description": "As you walk into your living room, you see a gun and a bloodstain on the ground. Hmm, strange.",
+      "isEndingRoom": false,
       "location": {
         "x": 15,
         "y": 5
@@ -143,6 +148,7 @@
     {
       "name": "Basement",
       "description": "You hear muffled screaming from the basement. As you round the stairs, you die! Game over!",
+      "isEndingRoom": true,
       "location": {
         "x": 0,
         "y": 30
