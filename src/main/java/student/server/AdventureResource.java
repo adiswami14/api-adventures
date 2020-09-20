@@ -1,15 +1,20 @@
 package student.server;
 
+import student.adventure.Adventure;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
+import java.util.Map;
 
 @Path("/")
 public class AdventureResource {
+
     /**
      * The single static adventure service instance used for this API.
      */
-    private static AdventureService service; // = new YourAdventureServiceHere();
+    private static AdventureService service = new AdventureGameService();
 
     /**
      * The API endpoint to test connectivity.
@@ -19,7 +24,7 @@ public class AdventureResource {
     @Path("ping")
     public String ping() {
         // TODO: This method should return `pong`.
-        return "";
+        return "pong";
     }
 
     /**
@@ -43,6 +48,7 @@ public class AdventureResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response create() throws AdventureException {
         int id = service.newGame();
+        System.out.println(id);
         return getGame(id);
     }
 
@@ -54,12 +60,27 @@ public class AdventureResource {
     @GET
     @Path("instance/{id: \\d+}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getGame(@PathParam("id") int id) {
+    public Response getGame(@PathParam("id") int id) throws AdventureException {
         GameStatus status = service.getGame(id);
         if (status == null) {
             return instanceNotFound(id);
         }
         return Response.ok(status).build();
+    }
+
+    /**
+     * The API endpoint to handle a command issued to the game engine.
+     * @param id the ID of the game instance currently being played
+     * @param command the command issued by the client
+     * @return the result of the issued command
+     */
+    @POST
+    @Path("instance/{id: \\d+}/command")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response handleCommand(@PathParam("id") int id, Command command) throws AdventureException {
+        service.executeCommand(id, command);
+        return getGame(id);
     }
 
     /**
@@ -79,18 +100,13 @@ public class AdventureResource {
     }
 
     /**
-     * The API endpoint to handle a command issued to the game engine.
-     * @param id the ID of the game instance currently being played
-     * @param command the command issued by the client
-     * @return the result of the issued command
+     * Manages OPTIONS for handleCommand method
      */
-    @POST
+    @OPTIONS
     @Path("instance/{id: \\d+}/command")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response handleCommand(@PathParam("id") int id, Command command) {
-        service.executeCommand(id, command);
-
+    public Response handleCommandOptions(@PathParam("id") int id, Command command) throws AdventureException {
         return getGame(id);
     }
 
@@ -104,6 +120,7 @@ public class AdventureResource {
     public Response fetchLeaderboard() {
         return Response.ok(service.fetchLeaderboard()).build();
     }
+
 
     /**
      * Helper method to build an `instanceNotFound` error.

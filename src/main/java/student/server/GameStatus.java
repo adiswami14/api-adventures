@@ -48,6 +48,9 @@ public class GameStatus {
      */
     private Map<String, List<String>> commandOptions;
 
+    /**
+     * Constructor for GameStatus class
+     */
     public GameStatus(boolean error, int id, String message, String imageUrl, String videoUrl, AdventureState state,
                       Map<String, List<String>> commandOptions) {
         this.error = error;
@@ -71,6 +74,14 @@ public class GameStatus {
         return message;
     }
 
+    /**
+     * Changes message to what one wants it to be
+     * @param message the message to set the current message to
+     */
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }
@@ -87,6 +98,10 @@ public class GameStatus {
         return commandOptions;
     }
 
+    /**
+     * @param o other Object to compare to
+     * @return whether an object equals another
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -98,9 +113,12 @@ public class GameStatus {
         GameStatus that = (GameStatus) o;
         return error == that.error &&
                 id == that.id &&
-                message.equals(that.message);
+                message.equals(that.getMessage()) && commandOptions.equals(that.getCommandOptions());
     }
 
+    /**
+     * Automatically comes with the equals() method
+     */
     @Override
     public int hashCode() {
         return Objects.hash(error, id, message, imageUrl, videoUrl, state, commandOptions);
