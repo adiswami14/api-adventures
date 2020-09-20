@@ -56,8 +56,10 @@ public class AdventureState {
      * @param itemList inventory of Player
      */
     private void inventoryToString(List<Item> itemList) {
-        for(Item item: itemList) {
-            inventory.add(item.getName()+", ");
+        for(int itemIndex =0;itemIndex<itemList.size();itemIndex++) {
+            if(itemIndex < itemList.size()-1) {
+                inventory.add(itemList.get(itemIndex).getName()+", ");
+            } else inventory.add(itemList.get(itemIndex).getName());
         }
     }
 
@@ -66,8 +68,10 @@ public class AdventureState {
      * @param roomList roomHistory of Player
      */
     private void historyToString(List<String> roomList) {
-        for(String roomName: roomList) {
-            history.add(roomName+ ", ");
+        for(int roomIndex = 0; roomIndex<roomList.size();roomIndex++) {
+            if(roomIndex < roomList.size()-1) {
+                history.add(roomList.get(roomIndex)+", ");
+            } else history.add(roomList.get(roomIndex));
         }
     }
 

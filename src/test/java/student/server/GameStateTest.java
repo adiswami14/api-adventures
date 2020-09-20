@@ -7,6 +7,7 @@ import student.adventure.Item;
 import student.adventure.Player;
 
 import javax.validation.constraints.Null;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,14 +19,16 @@ import static org.junit.Assert.assertTrue;
 public class GameStateTest {
     private Adventure adventure;
     private GameStatus gameStatus;
+    private AdventureState state;
     private HashMap<String, List<String>> commandOptions;
 
     @Before
     public void SetUp(){
         adventure = new Adventure(0);
-        gameStatus = new GameStatus(false, 0, "Hey there!", null, null,
-                new AdventureState(adventure), new HashMap<>());
+        state = new AdventureState(adventure);
         commandOptions = new HashMap<>();
+        gameStatus = new GameStatus(false, 0, "Hey there!", null, null,
+                state, commandOptions);
     }
 
     @Test

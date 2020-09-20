@@ -113,7 +113,7 @@ public class GameStatus {
         GameStatus that = (GameStatus) o;
         return error == that.error &&
                 id == that.id &&
-                message.equals(that.getMessage()) && commandOptions.equals(that.getCommandOptions());
+                message.equals(that.getMessage());
     }
 
     /**
