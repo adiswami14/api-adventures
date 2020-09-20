@@ -2,6 +2,7 @@ package student.server;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * An object representing the current state of a game instance.
@@ -47,7 +48,8 @@ public class GameStatus {
      */
     private Map<String, List<String>> commandOptions;
 
-    public GameStatus(boolean error, int id, String message, String imageUrl, String videoUrl, AdventureState state, Map<String, List<String>> commandOptions) {
+    public GameStatus(boolean error, int id, String message, String imageUrl, String videoUrl, AdventureState state,
+                      Map<String, List<String>> commandOptions) {
         this.error = error;
         this.id = id;
         this.message = message;
@@ -83,5 +85,24 @@ public class GameStatus {
 
     public Map<String, List<String>> getCommandOptions() {
         return commandOptions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        GameStatus that = (GameStatus) o;
+        return error == that.error &&
+                id == that.id &&
+                message.equals(that.message);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(error, id, message, imageUrl, videoUrl, state, commandOptions);
     }
 }
