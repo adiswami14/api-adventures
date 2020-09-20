@@ -10,6 +10,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * The CLI game engine
+ */
 public class CommandLineAdventure {
     private Scanner scanner; //scanner for the game
     private Player player;  //Player object of this game

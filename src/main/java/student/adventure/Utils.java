@@ -4,6 +4,9 @@ import java.util.Arrays;
 
 import static java.lang.Character.isLetter;
 
+/**
+ * Class containing public static methods for usage across multiple classes
+ */
 public class Utils {
 
     //code below from:

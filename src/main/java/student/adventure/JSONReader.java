@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+/**
+ * Class used solely for the parsing of JSON files
+ */
 public class JSONReader {
     private Game game; //wrapper class instance for deserialization
 

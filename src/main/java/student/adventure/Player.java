@@ -2,6 +2,9 @@ package student.adventure;
 
 import java.util.ArrayList;
 
+/**
+ * Player object class
+ */
 public class Player {
     private String name; //name of the player
     private Room currentRoom; //currentRoom of the player
@@ -23,6 +26,13 @@ public class Player {
      */
     public String getName(){
         return name;
+    }
+
+    /**
+     * @param name the name to set the name to
+     */
+    public void setName(String name){
+        this.name = name;
     }
 
     /**

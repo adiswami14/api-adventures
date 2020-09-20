@@ -4,6 +4,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+/**
+ * Class for handling input and output streams
+ */
 public class IOHandler {
     private InputStream inputStream; //variable which handles input
     private PrintStream printStream; //variable which handles output
