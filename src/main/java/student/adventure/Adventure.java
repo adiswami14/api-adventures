@@ -1,13 +1,13 @@
 package student.adventure;
 
+import student.server.AdventureState;
 import student.server.Command;
 import student.server.GameStatus;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Main adventure class that is used to interact with the API
@@ -19,21 +19,32 @@ public class Adventure {
     private GameStatus status; //current status of the Adventure game
     private Command command; //command currently issued by the client
     private int id; //id for this Adventure instance
+    private AdventureState state; //AdventureState instance for displaying inventory
+    private HashMap<String, List<String>> commandMap; //map for commands
 
     /**
      * Constructor for the API adventure class
      */
     public Adventure(int id) {
         JSONReader reader = null;
+
         try { //made a try-catch block to not interfere with AdventureService method's signature
             reader = new JSONReader(new File("src/main/resources/data/Data.json"));
             this.rooms = reader.getGame().getRooms();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         this.id = id;
-        status = new GameStatus(false, id, "Hey there!", null, null, null,
-                null);
+        initializePlayer();
+        commandMap = new HashMap<>();
+        state = new AdventureState(this);
+        status = new GameStatus(false, id, "", null, null,
+               state, commandMap);
+        status.setMessage("Hey there!");  //basic starting message
+        command = new Command();
+
+        run();
     }
 
     /**
@@ -64,31 +75,33 @@ public class Adventure {
      */
     public void setCommand(Command command) {
         this.command = command;
+        run(); //acts as a loop — ran every time a new command is called
+    }
+
+    /**
+     * @return current command issued by client
+     */
+    public Command getCommand() {
+        return command;
     }
 
     /**
      * Method that is called to start the game
      */
     public void run(){
-        initializePlayer();
-        examine();   //get description of the room you start of in
         handleUserInput();
-        //ioHandler.println(currentRoom.getDescription());  //get description of the last room
-    }
-
-    /**
-     * Method for quitting the program
-     * Seems unnecessary, but it improves readability
-     */
-    public void quit() {
-
+        updateCommands();
+        updateAdventureState();
+        player.setName(command.getPlayerName()); //reset name to the name of the player given by command
+        status = new GameStatus(false, id, status.getMessage(), null,
+                null, state, commandMap);
     }
 
     /**
      * Initializes basic player fields such as name and currentRoom
      */
     private void initializePlayer(){
-        player = new Player("");
+        player = new Player("Placeholder");
         player.setCurrentRoom(rooms.get(0));
         currentRoom = player.getCurrentRoom();
         player.getRoomHistory().add(currentRoom.getName()); //adds starting room to room history
@@ -101,44 +114,7 @@ public class Adventure {
         if(currentRoom == null) {
             throw new IllegalArgumentException();
         }
-        examineDirections(currentRoom); //split examine function into examineDirections and examineItems
-        examineItems(currentRoom);
-    }
-
-    /**
-     * Examines possible directions for a given room
-     * @param room room we are examining
-     */
-    private void examineDirections(Room room) {
-        //ioHandler.println(room.getDescription());  //String we will return for this method
-        //ioHandler.print("From here, you can go: ");
-
-        ArrayList<Direction> directionsInRoom = room.getPossibleDirections();
-
-        for(int directionIndex = 0; directionIndex<directionsInRoom.size();directionIndex++) {
-           // ioHandler.print(directionsInRoom.get(directionIndex).getName());
-            if(directionIndex != directionsInRoom.size()-1) {
-               // ioHandler.print(", ");
-            }
-        }
-        //ioHandler.println();
-    }
-
-    /**
-     * Examines possible Items for a given room
-     * @param room room we are examining
-     */
-    private void examineItems(Room room) {
-       // ioHandler.print("Items: ");
-        ArrayList<Item> itemsInRoom = room.getItems();
-
-        for(int itemIndex = 0; itemIndex<itemsInRoom.size();itemIndex++) {
-            //ioHandler.print(itemsInRoom.get(itemIndex).getName());
-            if(itemIndex != itemsInRoom.size()-1) {
-                //ioHandler.print(", ");
-            }
-        }
-        //ioHandler.println();
+        status.setMessage(currentRoom.getDescription());
     }
 
     /**
@@ -157,7 +133,7 @@ public class Adventure {
                 method.setAccessible(true);
                 method.invoke(this);
             } catch (Exception exception) {
-                //ioHandler.println("I don't understand \""+commandName+"\"!");
+                e.printStackTrace();
             }
         }
     }
@@ -177,12 +153,12 @@ public class Adventure {
                         player.setCurrentRoom(room);
                         currentRoom = player.getCurrentRoom();
                         player.getRoomHistory().add(currentRoom.getName()); //adds room to room history list
+                        examine();
                         return;
                     }
                 }
             }
         }
-        //ioHandler.println("I can't go \""+directionName+"\"!");
     }
 
     /**
@@ -197,7 +173,6 @@ public class Adventure {
                 return;
             }
         }
-        //ioHandler.println("You don't have \""+itemName+"\" in your inventory!");
     }
 
     /**
@@ -216,22 +191,6 @@ public class Adventure {
     }
 
     /**
-     * Function that formats and prints out room history of player
-     */
-    private void history() {
-        //ioHandler.print("Your room history: ");
-        ArrayList<String> playerRoomHistory = player.getRoomHistory();
-
-        for(int roomIndex = 0; roomIndex<playerRoomHistory.size();roomIndex++) {
-            //ioHandler.print(playerRoomHistory.get(roomIndex));
-            if(roomIndex != playerRoomHistory.size()-1) {
-                //ioHandler.print(", ");
-            }
-        }
-        //ioHandler.println();
-    }
-
-    /**
      * Function that gives distance to room that is typed in
      */
     private void distanceTo(String roomName) {
@@ -239,27 +198,81 @@ public class Adventure {
 
         for(Room room : rooms) {
             if(room.getName().toLowerCase().equals(roomName.toLowerCase())) {
-                //ioHandler.println("The distance between the current room and the "+roomName+" is "
-                        //+Utils.findDistance(currentLoc, room.getLocation())+" meters");
+                status.setMessage("The distance between the current room and the "+roomName+" is "
+                        +Utils.findDistance(currentLoc, room.getLocation())+" meters");
                 return;
             }
         }
-
-        //ioHandler.println("The room name \""+roomName+"\" is invalid");
     }
 
     /**
-     * Checks if player is in basement, to check if game is over
-     * @return whether the game is over
+     * Updates command buttons of current game
      */
-    private boolean isGameOver() {
-        return (currentRoom.isEndingRoom());
+    private void updateCommands() {
+        updateCommandsGo();
+        updateCommandsTake();
+        updateCommandsDrop();
+        updateCommandsExamine();
+        updateCommandsDistanceTo();
     }
 
     /**
-     * Updates gameState of current game
+     * Keeps track of buttons for possible directions to go in
      */
-    private void updateGameState() {
+    private void updateCommandsGo() {
+        ArrayList<String> directions = new ArrayList<>();
+        for(Direction d: currentRoom.getPossibleDirections()) {
+            directions.add(d.getName());
+        }
+        commandMap.put("go", directions);
+    }
 
+    /**
+     * Keeps track of buttons for possible items to take
+     */
+    private void updateCommandsTake() {
+        ArrayList<String> items = new ArrayList<>();
+        for(Item item: currentRoom.getItems()) {
+            items.add(item.getName());
+        }
+        commandMap.put("take", items);
+    }
+
+    /**
+     * Keeps track of buttons for possible items to drop
+     */
+    private void updateCommandsDrop() {
+        ArrayList<String> items = new ArrayList<>();
+        for(Item item: player.getInventory()) {
+            items.add(item.getName());
+        }
+        commandMap.put("drop", items);
+    }
+
+    /**
+     * Button for examining current room
+     */
+    private void updateCommandsExamine() {
+        ArrayList<String> empty = new ArrayList<>();
+        empty.add("");
+        commandMap.put("examine", empty);
+    }
+
+    /**
+     * Keeps track of buttons for possible rooms to measure distance to
+     */
+    private void updateCommandsDistanceTo() {
+        ArrayList<String> roomNames = new ArrayList<>();
+        for(Room room : rooms) {
+            roomNames.add(room.getName());
+        }
+        commandMap.put("distanceTo", roomNames);
+    }
+
+    /**
+     * update AdventureState instance by updating inventory and room history changes
+     */
+    private void updateAdventureState() {
+        state = new AdventureState(this);
     }
 }
