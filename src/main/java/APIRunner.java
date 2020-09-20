@@ -1,4 +1,5 @@
 import org.glassfish.grizzly.http.server.HttpServer;
+import student.adventure.Adventure;
 import student.server.AdventureResource;
 import student.server.AdventureServer;
 
