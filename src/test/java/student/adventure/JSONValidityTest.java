@@ -19,14 +19,6 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class JSONValidityTest {
-    private Gson gson;
-    private String filePaths;
-    @Before
-    public void setUp() {
-        gson = new Gson();
-        filePaths = "";
-    }
-
     //JSON validity testing
     @Test(expected = NullPointerException.class)
     public void nullJSONReaderTest() throws IOException {

@@ -110,24 +110,37 @@ public class CommandLineAdventure {
      * @param userInput the input string the user passes in at certain points of the game
      */
     private void handleUserInput(String userInput) {
-        Method method;
         String[] strInput = Utils.formatString(userInput).split(" ");
-        String commandName = strInput[0];
-        Command command = new Command(commandName,
-                Utils.formatString(Utils.joinStringArray(strInput, 1, strInput.length)));
+        String command = strInput[0];
+        String subject = Utils.formatString(Utils.joinStringArray(strInput, 1, strInput.length));
+        //since command is the first element, we only need to join the rest of the string array
 
-        try {   //checks for methods w/ String params
-            method = this.getClass().getDeclaredMethod(commandName, String.class);
-            method.setAccessible(true);
-            method.invoke(this, command.getCommandValue());
-        } catch(Exception e) {
-            try { //this is for methods that don't take in any params (i.e. examine(), quit())
-                method = this.getClass().getDeclaredMethod(commandName, null);
-                method.setAccessible(true);
-                method.invoke(this);
-            } catch (Exception exception) {
-                ioHandler.println("I don't understand \""+commandName+"\"!");
-            }
+        switch(command.toLowerCase()) { //checks first word of userInput
+            case "examine":
+                examine();
+                break;
+            case "take":
+                take(subject);
+                break;
+            case "drop":
+                drop(subject);
+                break;
+            case "go":
+                go(subject);
+                break;
+            case "history":
+                history();
+                break;
+            case "distanceto":
+                distanceTo(subject);
+                break;
+            case "quit":  //no break here because quit and exit have exactly the same purpose
+            case "exit":
+                quit();
+                break;
+            default:
+                System.out.println("I don't understand \""+userInput+"\"!");
+                break;
         }
     }
 
