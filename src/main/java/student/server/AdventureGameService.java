@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.SortedMap;
 
 public class AdventureGameService implements AdventureService{
-    private int gameId = 0; //assigns a new id to each game
-    private Map<Integer, Adventure> gameMap = new HashMap<>(); //maps each Adventure instance to its own id
+    int gameId = 0; //assigns a new id to each game
+    Map<Integer, Adventure> gameMap = new HashMap<>(); //maps each Adventure instance to its own id
 
     /**
      * Resets the service to its initial state.

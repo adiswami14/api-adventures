@@ -2,6 +2,7 @@ package student.server;
 
 import org.junit.Before;
 import org.junit.Test;
+import student.adventure.Adventure;
 
 import java.util.HashMap;
 
@@ -36,7 +37,7 @@ public class AdventureGameServiceTest {
         ags.newGame();
         ags.newGame();
         GameStatus status = new GameStatus(false, 1, "Hey there!", null, null,
-                new AdventureState(), new HashMap<>());
+                new AdventureState(new Adventure(1)), new HashMap<>());
         assertTrue(status.equals(ags.getGame(1)));
     }
 
