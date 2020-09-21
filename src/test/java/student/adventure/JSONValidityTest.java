@@ -21,12 +21,23 @@ import static org.junit.Assert.*;
 public class JSONValidityTest {
     //JSON validity testing
     @Test(expected = NullPointerException.class)
-    public void nullJSONReaderTest() throws IOException {
+    public void NullJSONReaderTest() throws IOException {
         new JSONReader(null);
     }
 
     @Test(expected = FileNotFoundException.class)
-    public void emptyJSONReaderTest() throws IOException {
+    public void EmptyJSONReaderTest() throws IOException {
         new JSONReader(new File(""));
+    }
+
+    @Test
+    public void EmptyJSONObjectReaderTest() throws IOException {
+        new JSONReader(new File("src/main/resources/data/Empty.json"));
+        //Gson handles this in gson.fromJson() call in JSONReader.parseFile()
+    }
+
+    @Test (expected = JsonSyntaxException.class)
+    public void IncorrectJSONDataReaderTest() throws IOException {
+        new JSONReader(new File("src/main/resources/data/Incorrect.json"));
     }
 }

@@ -15,7 +15,6 @@ import java.util.Scanner;
 import static org.junit.Assert.*;
 
 public class UserInputTest {
-    private Scanner scanner;
     private String inputString;
     private JSONReader reader;
     private CommandLineAdventure cliAdventure;
@@ -23,6 +22,7 @@ public class UserInputTest {
     private ArrayList<String> testRoomHistory;
     private ArrayList<Item> roomItemsList;
     private Room firstRoom;
+    private Player player;
 
     public UserInputTest() throws IOException {
         reader = new JSONReader(new File("src/main/resources/data/Data.json"));
@@ -34,7 +34,6 @@ public class UserInputTest {
 
     @Before
     public void setUp() {
-        scanner = new Scanner(System.in);
         inputString = "";
         testInventoryList = new ArrayList<>();
         testRoomHistory = new ArrayList<>();
@@ -48,26 +47,54 @@ public class UserInputTest {
     }
 
     @Test
+    public void QuitTest() {
+        exit.expectSystemExitWithStatus(0);
+        inputString = "Adi"+"\nquit";
+        System.setIn(new ByteArrayInputStream(inputString.getBytes()));
+        cliAdventure = new CommandLineAdventure(reader.getGame());
+        cliAdventure.run();
+    }
+
+    @Test
+    public void ExitTest() {
+        exit.expectSystemExitWithStatus(0);
+        inputString = "Adi"+"\nexit";
+        System.setIn(new ByteArrayInputStream(inputString.getBytes()));
+        cliAdventure = new CommandLineAdventure(reader.getGame());
+        cliAdventure.run();
+    }
+
+    @Test
+    public void EndingRoomTest() {
+        inputString = "Adi"+"\ngo downstairs"+"\ngo to the living room"+"\ngo downstairs"; //basement reached
+        System.setIn(new ByteArrayInputStream(inputString.getBytes()));
+        cliAdventure = new CommandLineAdventure(reader.getGame());
+        cliAdventure.run();
+        assertTrue(cliAdventure.isGameOver());
+    }
+
+    @Test
     public void GoInValidDirectionTest(){
         exit.expectSystemExit();
         Room livingRoom = reader.getGame().getRooms().get(4);
         inputString = "Adi"+"\ngo downstairs"+"\ngo to the living room"+"\nquit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
-        scanner = new Scanner(System.in);
         cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
         cliAdventure.run();
-        assertEquals(livingRoom, cliAdventure.getPlayer().getCurrentRoom());
+        assertEquals(livingRoom, player.getCurrentRoom());
     }
 
     @Test
     public void WrongRoomGoInDirectionTest(){
+        exit.expectSystemExitWithStatus(0);
         Room livingRoom = reader.getGame().getRooms().get(4);
-        inputString = "Adi"+"\ngo downstairs"+"\ngo to the living room"+"\ngo downstairs";
+        inputString = "Adi"+"\ngo downstairs"+"\nexit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
-        scanner = new Scanner(System.in);
         cliAdventure = new CommandLineAdventure(reader.getGame());
         cliAdventure.run();
-        assertFalse(livingRoom.equals(cliAdventure.getPlayer().getCurrentRoom()));
+        player = cliAdventure.getPlayer();
+        assertFalse(livingRoom.equals(player.getCurrentRoom()));
     }
 
     @Test
@@ -75,10 +102,10 @@ public class UserInputTest {
         exit.expectSystemExit();
         inputString = "Adi"+"\ngo yes"+"\nquit";  //direction entered is "yes"
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
-        scanner = new Scanner(System.in);
         cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
         cliAdventure.run();
-        assertNull(cliAdventure.getPlayer().getCurrentRoom());  //checks if direction entered is even valid
+        assertNull(player.getCurrentRoom());  //checks if direction entered is even valid
     }
 
     @Test
@@ -86,10 +113,10 @@ public class UserInputTest {
         exit.expectSystemExit();
         inputString = "Adi"+"\ngo    "+"\nquit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
-        scanner = new Scanner(System.in);
         cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
         cliAdventure.run();
-        assertNull(cliAdventure.getPlayer().getCurrentRoom());
+        assertNull(player.getCurrentRoom());
     }
 
     @Test
@@ -98,10 +125,10 @@ public class UserInputTest {
         testInventoryList.add(reader.getGame().getRooms().get(0).getItems().get(0));
         inputString = "Adi"+"\ntake lebron jersey"+"\nquit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
-        scanner = new Scanner(System.in);
         cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
         cliAdventure.run();
-        assertEquals(testInventoryList, cliAdventure.getPlayer().getInventory());
+        assertEquals(testInventoryList, player.getInventory());
         assertNotEquals(firstRoom.getItems(), roomItemsList);  //two asserts for the Item tests
         //one for the inventory addition, another for the item lost from the room
     }
@@ -111,10 +138,10 @@ public class UserInputTest {
         exit.expectSystemExit();
         inputString = "Adi"+"\ntake something"+"\nquit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
-        scanner = new Scanner(System.in);
         cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
         cliAdventure.run();
-        assertNull(cliAdventure.getPlayer().getInventory());
+        assertNull(player.getInventory());
         assertEquals(roomItemsList, firstRoom.getItems());
     }
 
@@ -123,10 +150,10 @@ public class UserInputTest {
         exit.expectSystemExit();
         inputString = "Adi"+"\ntake   "+"\nquit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
-        scanner = new Scanner(System.in);
         cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
         cliAdventure.run();
-        assertNull(cliAdventure.getPlayer().getInventory());
+        assertNull(player.getInventory());
         assertEquals(roomItemsList, firstRoom.getItems());
     }
 
@@ -136,10 +163,10 @@ public class UserInputTest {
         testInventoryList.add(firstRoom.getItems().get(0));
         inputString = "Adi"+"\ntake lebron jersey"+"\ndrop lebron jersey"+"\nquit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
-        scanner = new Scanner(System.in);
         cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
         cliAdventure.run();
-        assertNull(cliAdventure.getPlayer().getInventory()); //makes sure nothing is in inventory
+        assertNull(player.getInventory()); //makes sure nothing is in inventory
         assertEquals(firstRoom.getItems(), roomItemsList);
     }
 
@@ -149,10 +176,10 @@ public class UserInputTest {
         testInventoryList.add(firstRoom.getItems().get(0));
         inputString = "Adi"+"\ntake lebron jersey"+"\ndrop nothing"+"\nquit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
-        scanner = new Scanner(System.in);
         cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
         cliAdventure.run();
-        assertTrue(cliAdventure.getPlayer().getInventory().get(0).getName().equals("LeBron jersey"));
+        assertTrue(player.getInventory().get(0).getName().equals("LeBron jersey"));
         assertNotEquals(firstRoom.getItems(), roomItemsList);
     }
 
@@ -162,10 +189,10 @@ public class UserInputTest {
         testInventoryList.add(firstRoom.getItems().get(0));
         inputString = "Adi"+"\ndrop"+"\nexit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
-        scanner = new Scanner(System.in);
         cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
         cliAdventure.run();
-        assertNull(cliAdventure.getPlayer().getInventory());
+        assertNull(player.getInventory());
         assertEquals(firstRoom.getItems(), roomItemsList);
     }
 
@@ -177,10 +204,10 @@ public class UserInputTest {
         testRoomHistory.add("Living Room");
         inputString = "Adi"+"\ngo downstairs"+"\ngo TO the living room"+"\nquit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
-        scanner = new Scanner(System.in);
         cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
         cliAdventure.run();
-        assertEquals(testRoomHistory, cliAdventure.getPlayer().getRoomHistory());
+        assertEquals(testRoomHistory, player.getRoomHistory());
     }
 
     @Test
@@ -191,10 +218,10 @@ public class UserInputTest {
         testRoomHistory.add("Kitchen");
         inputString = "Adi"+"\ngo downstairs"+"\ngo TO the living room"+"\nquit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
-        scanner = new Scanner(System.in);
         cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
         cliAdventure.run();
-        assertNotEquals(testRoomHistory, cliAdventure.getPlayer().getRoomHistory());
+        assertNotEquals(testRoomHistory, player.getRoomHistory());
     }
 
     @Test
@@ -213,10 +240,10 @@ public class UserInputTest {
                 +"\ngo upstairs"+"\ngo downstairs"+"\ngo downstairs"+"\ngo to the living room"
                 +"\ngo back to kitchen"+"\ngo upstairs"+"\nquit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
-        scanner = new Scanner(System.in);
         cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
         cliAdventure.run();
-        assertEquals(testRoomHistory, cliAdventure.getPlayer().getRoomHistory());
+        assertEquals(testRoomHistory, player.getRoomHistory());
     }
 
     @Test
@@ -235,20 +262,9 @@ public class UserInputTest {
                 +"\ngo upstairs"+"\ngo downstairs"+"\ngo downstairs"+"\ngo to the living room"
                 +"\ngo back to kitchen"+"\ngo upstairs"+"\nquit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
-        scanner = new Scanner(System.in);
         cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
         cliAdventure.run();
-        assertEquals(testRoomHistory, cliAdventure.getPlayer().getRoomHistory());
+        assertEquals(testRoomHistory, player.getRoomHistory());
     }
-
-    @Test
-    public void QuitTest() {
-        exit.expectSystemExitWithStatus(0);
-        inputString = "Adi"+"\nquit";
-        System.setIn(new ByteArrayInputStream(inputString.getBytes()));
-        scanner = new Scanner(System.in);
-        cliAdventure = new CommandLineAdventure(reader.getGame());
-        cliAdventure.run();
-    }
-
 }
