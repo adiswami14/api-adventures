@@ -1,12 +1,11 @@
 package student.server;
 
 import student.adventure.Adventure;
+import student.adventure.DatabaseConnection;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedMap;
 
 public class AdventureGameService implements AdventureService{
     int gameId = 0; //assigns a new id to each game
@@ -85,8 +84,14 @@ public class AdventureGameService implements AdventureService{
      * @return a sorted map of player names to scores
      */
     @Override
-    public SortedMap<String, Integer> fetchLeaderboard() {
-        return null;
+    public Map<String, Integer> fetchLeaderboard() {
+        try {  //establishes a connection to the adventure.db
+            DatabaseConnection databaseConnection = new DatabaseConnection();
+            return databaseConnection.getLeaderBoard();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null; //return null otherwise
     }
 
     /**
