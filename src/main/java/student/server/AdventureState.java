@@ -50,6 +50,14 @@ public class AdventureState {
     }
 
     /**
+     * Converts values of lists to strings for testing
+     * @return string containing all the values of inventory and history lists
+     */
+    public String toString() {
+        return inventory.toString()+history.toString();
+    }
+
+    /**
      * Converts item elements in inventory to String
      * @param itemList inventory of Player
      */

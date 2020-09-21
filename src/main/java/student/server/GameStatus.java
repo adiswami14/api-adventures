@@ -1,5 +1,6 @@
 package student.server;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -94,6 +95,13 @@ public class GameStatus {
         return state;
     }
 
+    /**
+     * @param state AdventureState instance to set current state to
+     */
+    public void setState(AdventureState state) {
+        this.state = state;
+    }
+
     public Map<String, List<String>> getCommandOptions() {
         return commandOptions;
     }
@@ -111,9 +119,7 @@ public class GameStatus {
             return false;
         }
         GameStatus that = (GameStatus) o;
-        return error == that.error &&
-                id == that.id &&
-                message.equals(that.getMessage());
+        return toString().equals(that.toString());
     }
 
     /**
@@ -122,5 +128,21 @@ public class GameStatus {
     @Override
     public int hashCode() {
         return Objects.hash(error, id, message, imageUrl, videoUrl, state, commandOptions);
+    }
+
+    /**
+     * toString method to test all elements of this class
+     * @return A string of all elements in the gameStatus class
+     */
+    public String toString() {
+        String returnString = error + ", " + id + ", " + message + ", " + state + ", ";
+
+        for (Map.Entry<String, List<String>> entry : commandOptions.entrySet()) {
+            for(String string : entry.getValue()) {
+                returnString+=string; //individually adds all values to the string to account for hashmap values
+            }
+        }
+
+        return returnString.trim();
     }
 }
