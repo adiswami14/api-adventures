@@ -1,12 +1,8 @@
 package student.server;
 
-import student.adventure.Adventure;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
-import java.util.Map;
 
 @Path("/")
 public class AdventureResource {

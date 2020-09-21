@@ -2,7 +2,7 @@ package student.server;
 
 import org.junit.Before;
 import org.junit.Test;
-import student.adventure.Adventure;
+import student.adventure.api.Adventure;
 
 import java.util.HashMap;
 

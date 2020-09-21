@@ -1,6 +1,6 @@
-package student.adventure;
+package student.adventure.api;
 
-import student.server.AdventureResource;
+import student.adventure.*;
 import student.server.AdventureState;
 import student.server.Command;
 import student.server.GameStatus;
@@ -23,7 +23,7 @@ public class Adventure {
     private int id; //id for this Adventure instance
     private AdventureState state; //AdventureState instance for displaying inventory
     private HashMap<String, List<String>> commandMap; //map for commands
-    private DatabaseConnection dbConnection;
+    private DatabaseConnection dbConnection; //instance of DatabaseConnection to talk to database
 
     /**
      * Constructor for the API adventure class
@@ -38,19 +38,8 @@ public class Adventure {
             e.printStackTrace();
         }
 
-        this.id = id;
-        initializePlayer();
-        commandMap = new HashMap<>();
-        state = new AdventureState(this);
-        status = new GameStatus(false, id, "", null, null,
-               state, commandMap);
-        status.setMessage("Hey there!");  //basic starting message
-        command = new Command();
-        try {
-            dbConnection = new DatabaseConnection();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        //initialization of multiple variables
+        initializeGame(id);
 
         run();
     }
@@ -106,11 +95,7 @@ public class Adventure {
     public void run(){
         if(!isGameOver()) {
             handleUserInput();
-            updateCommands();
-            updateAdventureState();
-            player.setName(command.getPlayerName()); //reset name to the name of the player given by command
-            status = new GameStatus(false, id, status.getMessage(), null,
-                    null, state, commandMap);
+            update();
         } else {
             try {
                 dbConnection.addPlayer(getPlayer());
@@ -227,6 +212,14 @@ public class Adventure {
         }
     }
 
+    private void update() {
+        updateCommands();
+        updateAdventureState();
+        player.setName(command.getPlayerName()); //reset name to the name of the player given by command
+        status = new GameStatus(false, id, status.getMessage(), null,
+                null, state, commandMap);
+    }
+
     /**
      * Updates command buttons of current game
      */
@@ -296,5 +289,25 @@ public class Adventure {
      */
     private void updateAdventureState() {
         state = new AdventureState(this);
+    }
+
+    /**
+     * Sets initial value to all member variables
+     * @param id id of the current instance of Adventure game
+     */
+    private void initializeGame(int id) {
+        this.id = id;
+        initializePlayer();
+        commandMap = new HashMap<>();
+        state = new AdventureState(this);
+        status = new GameStatus(false, id, "", null, null,
+                state, commandMap);
+        status.setMessage("Hey there!");  //basic starting message
+        command = new Command();
+        try {
+            dbConnection = new DatabaseConnection();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 }

@@ -1,7 +1,7 @@
 package student.server;
 
-import student.adventure.Adventure;
-import student.adventure.DatabaseConnection;
+import student.adventure.api.Adventure;
+import student.adventure.api.DatabaseConnection;
 
 import java.sql.SQLException;
 import java.util.HashMap;

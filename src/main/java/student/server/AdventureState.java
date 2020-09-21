@@ -1,10 +1,8 @@
 package student.server;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import student.adventure.Adventure;
-import student.adventure.Game;
+import student.adventure.api.Adventure;
 import student.adventure.Item;
-import student.adventure.Room;
 
 import java.util.ArrayList;
 import java.util.List;
