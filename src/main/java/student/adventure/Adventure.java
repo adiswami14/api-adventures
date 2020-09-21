@@ -1,5 +1,6 @@
 package student.adventure;
 
+import student.server.AdventureResource;
 import student.server.AdventureState;
 import student.server.Command;
 import student.server.GameStatus;
@@ -7,6 +8,7 @@ import student.server.GameStatus;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -21,6 +23,7 @@ public class Adventure {
     private int id; //id for this Adventure instance
     private AdventureState state; //AdventureState instance for displaying inventory
     private HashMap<String, List<String>> commandMap; //map for commands
+    private DatabaseConnection dbConnection;
 
     /**
      * Constructor for the API adventure class
@@ -43,6 +46,11 @@ public class Adventure {
                state, commandMap);
         status.setMessage("Hey there!");  //basic starting message
         command = new Command();
+        try {
+            dbConnection = new DatabaseConnection();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
 
         run();
     }
@@ -73,7 +81,7 @@ public class Adventure {
      * Sets command given by client to current command issued to the game
      * @param command the command passed in by the client
      */
-    public void setCommand(Command command) {
+    public void setCommand(Command command){
         this.command = command;
         run(); //acts as a loop — ran every time a new command is called
     }
@@ -86,15 +94,30 @@ public class Adventure {
     }
 
     /**
-     * Method that is called to start the game
+     * Checks if the player is in the final room
+     */
+    public boolean isGameOver() {
+        return currentRoom.isEndingRoom();
+    }
+
+    /**
+     * Method that is called to loop through the game
      */
     public void run(){
-        handleUserInput();
-        updateCommands();
-        updateAdventureState();
-        player.setName(command.getPlayerName()); //reset name to the name of the player given by command
-        status = new GameStatus(false, id, status.getMessage(), null,
-                null, state, commandMap);
+        if(!isGameOver()) {
+            handleUserInput();
+            updateCommands();
+            updateAdventureState();
+            player.setName(command.getPlayerName()); //reset name to the name of the player given by command
+            status = new GameStatus(false, id, status.getMessage(), null,
+                    null, state, commandMap);
+        } else {
+            try {
+                dbConnection.addPlayer(getPlayer());
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -187,7 +210,6 @@ public class Adventure {
                 return;
             }
         }
-        //ioHandler.println("There is no item \""+itemName+"\" in this room!");
     }
 
     /**
