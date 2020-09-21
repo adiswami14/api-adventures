@@ -44,6 +44,23 @@ public class CommandLineAdventure {
         ioHandler.println(currentRoom.getDescription());  //get description of the last room
     }
 
+
+    /**
+     * Method for quitting the program
+     * Seems unnecessary, but it improves readability
+     */
+    public void quit() {
+        System.exit(0);
+    }
+
+    /**
+     * Checks if player is in basement, to check if game is over
+     * @return whether the game is over
+     */
+    public boolean isGameOver() {
+        return (currentRoom.isEndingRoom());
+    }
+
     /**
      * Initializes basic player fields such as name and currentRoom
      */
@@ -227,21 +244,5 @@ public class CommandLineAdventure {
         }
 
         ioHandler.println("The room name \""+roomName+"\" is invalid");
-    }
-
-    /**
-     * Checks if player is in basement, to check if game is over
-     * @return whether the game is over
-     */
-    private boolean isGameOver() {
-        return (currentRoom.isEndingRoom());
-    }
-
-    /**
-     * Method for quitting the program
-     * Seems unnecessary, but it improves readability
-     */
-    public void quit() {
-        System.exit(0);
     }
 }
