@@ -1,4 +1,4 @@
-package student.adventure;
+package student.adventure.cli;
 
 import java.io.InputStream;
 import java.io.OutputStream;

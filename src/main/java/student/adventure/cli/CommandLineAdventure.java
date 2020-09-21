@@ -1,12 +1,8 @@
-package student.adventure;
+package student.adventure.cli;
 
-import student.server.AdventureState;
-import student.server.Command;
-import student.server.GameStatus;
+import student.adventure.*;
+import student.adventure.cli.IOHandler;
 
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Scanner;
 

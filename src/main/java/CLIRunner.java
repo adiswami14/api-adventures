@@ -1,4 +1,4 @@
-import student.adventure.CommandLineAdventure;
+import student.adventure.cli.CommandLineAdventure;
 import student.adventure.JSONReader;
 
 import java.io.File;
