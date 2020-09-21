@@ -40,7 +40,6 @@ public class Adventure {
 
         //initialization of multiple variables
         initializeGame(id);
-
         run();
     }
 
@@ -134,7 +133,7 @@ public class Adventure {
         try {   //checks for methods w/ String params
             method = this.getClass().getDeclaredMethod(command.getCommandName(), String.class);
             method.setAccessible(true);
-            method.invoke(this, command.getCommandValue());
+            method.invoke(this, Utils.formatString(command.getCommandValue()));
         } catch(Exception e) {
             try { //this is for methods that don't take in any params (i.e. examine(), quit())
                 method = this.getClass().getDeclaredMethod(command.getCommandName(), null);
@@ -205,7 +204,7 @@ public class Adventure {
 
         for(Room room : rooms) {
             if(room.getName().toLowerCase().equals(roomName.toLowerCase())) {
-                status.setMessage("The distance between the current room and the "+roomName+" is "
+                status.setMessage("The distance between the current room and the "+room.getName()+" is "
                         +Utils.findDistance(currentLoc, room.getLocation())+" meters");
                 return;
             }
