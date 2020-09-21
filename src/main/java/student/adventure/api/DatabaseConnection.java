@@ -1,4 +1,6 @@
-package student.adventure;
+package student.adventure.api;
+
+import student.adventure.Player;
 
 import java.net.URL;
 import java.sql.*;
@@ -73,12 +75,12 @@ public class DatabaseConnection {
             public int compare(Map.Entry<String, Integer> o1,
                                Map.Entry<String, Integer> o2)
             {
-                return (o1.getValue()).compareTo(o2.getValue());
+                return (o2.getValue()).compareTo(o1.getValue()); //orders from best to worst
             }
         });
 
         //sends reordered map based on entrySet sorting
-        Map<String, Integer> tempMap = new HashMap<>();
+        HashMap<String, Integer> tempMap = new LinkedHashMap<String, Integer>();
         for (Map.Entry<String, Integer> aa : sortList) {
             tempMap.put(aa.getKey(), aa.getValue());
         }
