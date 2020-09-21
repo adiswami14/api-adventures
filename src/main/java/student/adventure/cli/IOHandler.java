@@ -16,6 +16,9 @@ public class IOHandler {
      * @param outputStream output stream we can use to print
      */
     public IOHandler(InputStream inputStream, OutputStream outputStream) {
+        if(inputStream == null || outputStream == null) {
+            throw new IllegalArgumentException();
+        }
         this.inputStream = inputStream;
         printStream = (PrintStream)outputStream;
     }
