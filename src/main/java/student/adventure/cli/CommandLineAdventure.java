@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * The CLI game engine
+ * The CLI game engine class
  */
 public class CommandLineAdventure {
     private Scanner scanner; //scanner for the game

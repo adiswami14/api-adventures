@@ -19,10 +19,18 @@ public class Command {
      */
     private String playerName;
 
+    /**
+     * Default constructor for Command class
+     */
     public Command() {
 
     }
 
+    /**
+     * Main constructor for Command class
+     * @param commandName the directive of the command (i.e. "go", "drop")
+     * @param commandValue the subject of the command
+     */
     public Command(String commandName, String commandValue) {
         this.commandName = commandName;
         this.commandValue = commandValue;

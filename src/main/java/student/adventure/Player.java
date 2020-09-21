@@ -11,6 +11,10 @@ public class Player {
     private ArrayList<Item> inventory; //list of items the player possesses
     private ArrayList<String> roomHistory; //history of rooms player has traversed
 
+    /**
+     * Constructor for the player class
+     * @param name the name of the Player object
+     */
     public Player(String name) {
         if(name == null || name.replaceAll(" ", "").isEmpty()) {
             //checks name isn't all whitespace

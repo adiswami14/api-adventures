@@ -1,5 +1,8 @@
 package student.adventure;
 
+/**
+ * Class for the direction schema in JSON data
+ */
 public class Direction {
     private String name; //name of the direction (i.e. East)
     private String connectingRoom; //room it connects to through a particular Direction

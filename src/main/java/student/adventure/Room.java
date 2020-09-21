@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
+/**
+ * Class that stores Room objects, represents a single room in the game
+ */
 public class Room {
     private String name; //name of the Room
     private String description; //sentence describing this Room object

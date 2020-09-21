@@ -41,6 +41,9 @@ public class AdventureServer {
         }
     }
 
+    /**
+     * Creates HttpServer instance through which to run the game from
+     */
     public static HttpServer createServer(final Class<?> resourceClass) throws IOException {
         final ResourceConfig resourceConfig = new ResourceConfig(resourceClass);
         resourceConfig.register(

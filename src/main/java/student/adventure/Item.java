@@ -1,5 +1,8 @@
 package student.adventure;
 
+/**
+ * Class for items in player inventory and room collectibles
+ */
 public class Item {
     private String name; //name of the item
 

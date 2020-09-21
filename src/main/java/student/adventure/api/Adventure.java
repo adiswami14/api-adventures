@@ -94,10 +94,10 @@ public class Adventure {
     public void run(){
         if(!isGameOver()) {
             handleUserInput();
-            update();
+            update();  //updates all of the commands and AdventureState instance
         } else {
             try {
-                dbConnection.addPlayer(getPlayer());
+                dbConnection.addPlayer(getPlayer());  //adds player to the database
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
@@ -211,6 +211,9 @@ public class Adventure {
         }
     }
 
+    /**
+     * Updates commands, adventure state, and game status of the game
+     */
     private void update() {
         updateCommands();
         updateAdventureState();

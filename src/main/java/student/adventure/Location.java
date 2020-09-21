@@ -1,5 +1,8 @@
 package student.adventure;
 
+/**
+ * Class that stores location of each room in game
+ */
 public class Location {
     private int x; //x-coordinate of location
     private int y; //y-coordinate of location

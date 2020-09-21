@@ -64,7 +64,7 @@ public class AdventureState {
     private void inventoryToString(List<Item> itemList) {
         for(int itemIndex =0;itemIndex<itemList.size();itemIndex++) {
             if(itemIndex < itemList.size()-1) {
-                inventory.add(itemList.get(itemIndex).getName()+", ");
+                inventory.add(itemList.get(itemIndex).getName()+", "); //formats with commas on the actual UI
             } else inventory.add(itemList.get(itemIndex).getName());
         }
     }
