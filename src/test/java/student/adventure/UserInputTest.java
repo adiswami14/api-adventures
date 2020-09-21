@@ -52,6 +52,18 @@ public class UserInputTest {
         inputString = "Adi"+"\nquit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
         cliAdventure = new CommandLineAdventure(reader.getGame());
+        //Adventure instance is called in every new testing method because of the while loop
+        //structure of my code in CLI
+        cliAdventure.run();
+    }
+
+    @Test
+    public void BadFormatQuitTest(){
+        exit.expectSystemExitWithStatus(0);
+        inputString = "Adi"+"\nqUIt\t";
+        System.setIn(new ByteArrayInputStream(inputString.getBytes()));
+        cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
         cliAdventure.run();
     }
 
@@ -61,6 +73,16 @@ public class UserInputTest {
         inputString = "Adi"+"\nexit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
         cliAdventure = new CommandLineAdventure(reader.getGame());
+        cliAdventure.run();
+    }
+
+    @Test
+    public void BadFormatExitTest(){
+        exit.expectSystemExitWithStatus(0);
+        inputString = "Adi"+"\neXit\t";
+        System.setIn(new ByteArrayInputStream(inputString.getBytes()));
+        cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
         cliAdventure.run();
     }
 
@@ -78,6 +100,18 @@ public class UserInputTest {
         exit.expectSystemExit();
         Room livingRoom = reader.getGame().getRooms().get(4);
         inputString = "Adi"+"\ngo downstairs"+"\ngo to the living room"+"\nquit";
+        System.setIn(new ByteArrayInputStream(inputString.getBytes()));
+        cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
+        cliAdventure.run();
+        assertEquals(livingRoom, player.getCurrentRoom());
+    }
+
+    @Test
+    public void BadFormatGoInValidDirectionTest(){
+        exit.expectSystemExit();
+        Room livingRoom = reader.getGame().getRooms().get(4);
+        inputString = "Adi"+"\ngO     DowNstaIrs"+"\ngo \tto \tthe liVIng room"+"\nquit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
         cliAdventure = new CommandLineAdventure(reader.getGame());
         player = cliAdventure.getPlayer();
@@ -134,6 +168,19 @@ public class UserInputTest {
     }
 
     @Test
+    public void BadFormatTakeValidItemTest(){
+        exit.expectSystemExit();
+        testInventoryList.add(reader.getGame().getRooms().get(0).getItems().get(0));
+        inputString = "Adi"+"\ntake \t\tlEBron \tJeRsey\t"+"\nquit";
+        System.setIn(new ByteArrayInputStream(inputString.getBytes()));
+        cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
+        cliAdventure.run();
+        assertEquals(testInventoryList, player.getInventory());
+        assertNotEquals(firstRoom.getItems(), roomItemsList);
+    }
+
+    @Test
     public void TakeInvalidItemTest(){
         exit.expectSystemExit();
         inputString = "Adi"+"\ntake something"+"\nquit";
@@ -171,6 +218,19 @@ public class UserInputTest {
     }
 
     @Test
+    public void BadFormatDropValidItemTest(){  //adds item to inventory and drops it
+        exit.expectSystemExit();
+        testInventoryList.add(firstRoom.getItems().get(0));
+        inputString = "Adi"+"\ntake lebron jersey"+"\ndrop LEbrOn \t   JerSEy"+"\nquit";
+        System.setIn(new ByteArrayInputStream(inputString.getBytes()));
+        cliAdventure = new CommandLineAdventure(reader.getGame());
+        player = cliAdventure.getPlayer();
+        cliAdventure.run();
+        assertNull(player.getInventory()); //makes sure nothing is in inventory
+        assertEquals(firstRoom.getItems(), roomItemsList);
+    }
+
+    @Test
     public void DropInvalidItemTest(){  //adds item to inventory and drops invalid item
         exit.expectSystemExit();
         testInventoryList.add(firstRoom.getItems().get(0));
@@ -187,7 +247,7 @@ public class UserInputTest {
     public void DropEmptyItemTest(){
         exit.expectSystemExit();
         testInventoryList.add(firstRoom.getItems().get(0));
-        inputString = "Adi"+"\ndrop"+"\nexit";
+        inputString = "Adi"+"\ndrop  "+"\nexit";
         System.setIn(new ByteArrayInputStream(inputString.getBytes()));
         cliAdventure = new CommandLineAdventure(reader.getGame());
         player = cliAdventure.getPlayer();
