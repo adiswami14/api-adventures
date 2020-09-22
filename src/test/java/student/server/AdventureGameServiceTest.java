@@ -2,9 +2,12 @@ package student.server;
 
 import org.junit.Before;
 import org.junit.Test;
-import student.adventure.api.Adventure;
+import student.adventure.Adventure;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -36,8 +39,21 @@ public class AdventureGameServiceTest {
         ags.newGame();
         ags.newGame();
         ags.newGame();
+        Adventure adventure = new Adventure(1, null, null);
+        adventure.run();
+        HashMap<String, List<String>> commandOptions = new HashMap<String, List<String>>();
+        ArrayList<String> list = new ArrayList<>(Arrays.asList("Down the hallway", "Downstairs", "Upstairs"));
+        commandOptions.put("go", list);
+        list = new ArrayList<>(Arrays.asList(""));
+        commandOptions.put("examine", list);
+        list = new ArrayList<>(Arrays.asList("LeBron jersey", "MacBook pro"));
+        commandOptions.put("take", list);
+        list = new ArrayList<>();
+        commandOptions.put("drop", list);
+        list = new ArrayList<>(Arrays.asList("Bedroom", "Bathroom", "Attic", "Kitchen", "Living Room", "Basement"));
+        commandOptions.put("distanceTo", list);
         GameStatus status = new GameStatus(false, 1, "Hey there!", null, null,
-                new AdventureState(new Adventure(1)), new HashMap<>());
+                new AdventureState(adventure), commandOptions);
         assertTrue(status.equals(ags.getGame(1)));
     }
 

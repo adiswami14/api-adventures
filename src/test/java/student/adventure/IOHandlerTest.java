@@ -1,10 +1,6 @@
 package student.adventure;
 
 import org.junit.Test;
-import student.adventure.cli.IOHandler;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 
 import static org.junit.Assert.assertEquals;
 
@@ -33,3 +29,4 @@ public class IOHandlerTest {
         assertEquals(System.out, ioHandler.getPrintStream());
     }
 }
+

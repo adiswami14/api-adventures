@@ -2,7 +2,7 @@ package student.server;
 
 import org.junit.Before;
 import org.junit.Test;
-import student.adventure.api.Adventure;
+import student.adventure.Adventure;
 import student.adventure.Player;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class GameStateTest {
 
     @Before
     public void SetUp(){
-        adventure = new Adventure(0);
+        adventure = new Adventure(0, null, null);
         state = new AdventureState(adventure);
         commandOptions = new HashMap<>();
         gameStatus = new GameStatus(false, 0, "Hey there!", null, null,

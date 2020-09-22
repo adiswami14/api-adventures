@@ -2,13 +2,7 @@ package student.server;
 
 import org.junit.Before;
 import org.junit.Test;
-import student.adventure.Item;
-import student.adventure.api.Adventure;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import student.adventure.Adventure;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,7 +12,7 @@ public class CommandTest {
 
     @Before
     public void SetUp() {
-        adventure = new Adventure(0);
+        adventure = new Adventure(0, null, null);
         command = new Command();
     }
 
