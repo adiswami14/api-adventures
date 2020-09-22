@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 /**
- * Main adventure class that is used to interact with the API (also works with CLI)
+ * Game engine class used for updating game status
  */
 public class Adventure {
     private Player player;  //Player object of this game
@@ -27,7 +27,8 @@ public class Adventure {
     private student.adventure.DatabaseConnection dbConnection; //instance of DatabaseConnection to talk to database
     private student.adventure.IOHandler ioHandler; //IOHandler instance for game if ran on command line
     private Scanner scanner; //scanner for it the game is ran on command line
-    private boolean isCli = true; //true if cli is running, false if api is running
+    private Updater updater; //Updater instance for this game instance
+    private boolean isCli = true; //true if cli is running, false if api is running (defaults to true)
 
     /**
      * Constructor for the API adventure class
@@ -52,6 +53,13 @@ public class Adventure {
     }
 
     /**
+     * @return list of rooms in this game
+     */
+    public ArrayList<Room> getRooms() {
+        return rooms;
+    }
+
+    /**
      * @return Player object of the game
      */
     public Player getPlayer() {
@@ -67,10 +75,32 @@ public class Adventure {
     }
 
     /**
+     * Sets gameStatus variable to a variable passed in
+     * @param status the gameStatus variable to change the current instance to
+     */
+    public void setStatus(GameStatus status) {
+        this.status = status;
+    }
+
+    /**
      * @return id of the game
      */
     public int getId(){
         return id;
+    }
+
+    /**
+     * @return the AdventureState instance of this game engine
+     */
+    public AdventureState getState() {
+        return state;
+    }
+
+    /**
+     * @param state the Adventure State value that we are setting the game engine value to
+     */
+    public void setState(AdventureState state) {
+        this.state = state;
     }
 
     /**
@@ -98,10 +128,24 @@ public class Adventure {
     }
 
     /**
+     * @return the map of commands in this game instance
+     */
+    public HashMap<String, List<String>> getCommandMap() {
+        return commandMap;
+    }
+
+    /**
      * Checks if the player is in the final room
      */
     public boolean isGameOver() {
         return currentRoom.isEndingRoom();
+    }
+
+    /**
+     * Checks if this game instance is being run on command line or through REST API
+     */
+    public boolean isCLI() {
+        return isCli;
     }
 
     /**
@@ -110,17 +154,19 @@ public class Adventure {
     public void run(){
         //examine();
         if(!isGameOver()) {
+            updater = new Updater(this); //keep updating updater with current adventure instance
+            //keeps updating game with up-to-date variables
             handleUserInput();
-            update();  //updates all of the commands and AdventureState instance
+            updater.update();  //updates all of the commands and AdventureState instance
             if(isCli && scanner.hasNextLine()) {  //if CLI is running and if scanner still has input left
                 setCommand(ioHandler.convertStringToCommand(scanner.nextLine()));
             }
         } else {
-            try {
+            /*try {
                 dbConnection.addPlayer(getPlayer());  //adds player to the database
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
-            }
+            }*/
         }
     }
 
@@ -297,91 +343,6 @@ public class Adventure {
     }
 
     /**
-     * Updates commands, adventure state, and game status of the game
-     */
-    private void update() {
-        updateCommands();
-        updateAdventureState();
-        status = new GameStatus(false, id, status.getMessage(), null,
-                null, state, commandMap);
-
-        if(!isCli) {
-            player.setName(command.getPlayerName()); //reset name to the name of the player given by UI command
-        }
-    }
-
-    /**
-     * Updates command buttons of current game
-     */
-    private void updateCommands() {
-        updateCommandsGo();
-        updateCommandsTake();
-        updateCommandsDrop();
-        updateCommandsExamine();
-        updateCommandsDistanceTo();
-    }
-
-    /**
-     * Keeps track of buttons for possible directions to go in
-     */
-    private void updateCommandsGo() {
-        ArrayList<String> directions = new ArrayList<>();
-        for(Direction d: currentRoom.getPossibleDirections()) {
-            directions.add(d.getName());
-        }
-        commandMap.put("go", directions);
-    }
-
-    /**
-     * Keeps track of buttons for possible items to take
-     */
-    private void updateCommandsTake() {
-        ArrayList<String> items = new ArrayList<>();
-        for(Item item: currentRoom.getItems()) {
-            items.add(item.getName());
-        }
-        commandMap.put("take", items);
-    }
-
-    /**
-     * Keeps track of buttons for possible items to drop
-     */
-    private void updateCommandsDrop() {
-        ArrayList<String> items = new ArrayList<>();
-        for(Item item: player.getInventory()) {
-            items.add(item.getName());
-        }
-        commandMap.put("drop", items);
-    }
-
-    /**
-     * Button for examining current room
-     */
-    private void updateCommandsExamine() {
-        ArrayList<String> empty = new ArrayList<>();
-        empty.add("");
-        commandMap.put("examine", empty);
-    }
-
-    /**
-     * Keeps track of buttons for possible rooms to measure distance to
-     */
-    private void updateCommandsDistanceTo() {
-        ArrayList<String> roomNames = new ArrayList<>();
-        for(Room room : rooms) {
-            roomNames.add(room.getName());
-        }
-        commandMap.put("distanceTo", roomNames);
-    }
-
-    /**
-     * update AdventureState instance by updating inventory and room history changes
-     */
-    private void updateAdventureState() {
-        state = new AdventureState(this);
-    }
-
-    /**
      * Sets initial value to all member variables
      * @param id id of the current instance of Adventure game
      */
@@ -402,11 +363,12 @@ public class Adventure {
                 state, commandMap);
         status.setMessage("Hey there!");  //basic starting message
         command = new Command();
+        updater = new Updater(this);
 
-        try {
+        /*try {
             dbConnection = new student.adventure.DatabaseConnection(); //establish a database connection
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-        }
+        }*/
     }
 }
