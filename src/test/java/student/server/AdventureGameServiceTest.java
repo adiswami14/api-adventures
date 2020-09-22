@@ -52,8 +52,9 @@ public class AdventureGameServiceTest {
         commandOptions.put("drop", list);
         list = new ArrayList<>(Arrays.asList("Bedroom", "Bathroom", "Attic", "Kitchen", "Living Room", "Basement"));
         commandOptions.put("distanceTo", list);
-        GameStatus status = new GameStatus(false, 1, "Hey there!", null, null,
+        GameStatus status = new GameStatus(false, 1, "", null, null,
                 new AdventureState(adventure), commandOptions);
+        status.setMessage(adventure.getRooms().get(0).getDescription());
         assertTrue(status.equals(ags.getGame(1)));
     }
 

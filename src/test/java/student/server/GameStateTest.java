@@ -24,8 +24,8 @@ public class GameStateTest {
         adventure = new Adventure(0, null, null);
         state = new AdventureState(adventure);
         commandOptions = new HashMap<>();
-        gameStatus = new GameStatus(false, 0, "Hey there!", null, null,
-                state, commandOptions);
+        gameStatus = new GameStatus(false, 0, adventure.getRooms().get(0).getDescription(), null,
+                null, state, commandOptions);
     }
 
     @Test

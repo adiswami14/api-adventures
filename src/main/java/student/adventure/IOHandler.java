@@ -32,6 +32,9 @@ public class IOHandler {
      * @return a Command from user input from the command line
      */
     public Command convertStringToCommand(String userInput) {
+        if(userInput == null) {
+            throw new IllegalArgumentException();
+        }
         String[] strInput = Utils.formatString(userInput).split(" ");
         String command = strInput[0].toLowerCase();
         String subject = Utils.formatString(Utils.joinStringArray(strInput, 1, strInput.length));
