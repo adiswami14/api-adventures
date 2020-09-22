@@ -1,7 +1,7 @@
 package student.server;
 
-import student.adventure.api.Adventure;
-import student.adventure.api.DatabaseConnection;
+import student.adventure.Adventure;
+import student.adventure.DatabaseConnection;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public class AdventureGameService implements AdventureService{
      */
     @Override
     public int newGame() throws AdventureException {
-        Adventure adventure = new Adventure(gameId);
+        Adventure adventure = new Adventure(gameId, null, null);
         gameMap.put(gameId, adventure);
         gameId++;
         return adventure.getId();

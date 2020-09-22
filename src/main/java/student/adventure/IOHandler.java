@@ -1,4 +1,7 @@
-package student.adventure.cli;
+package student.adventure;
+
+import student.adventure.Utils;
+import student.server.Command;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -21,6 +24,21 @@ public class IOHandler {
         }
         this.inputStream = inputStream;
         printStream = (PrintStream)outputStream;
+    }
+
+    /**
+     * Turns command line input into a command
+     * @param userInput user input from the command line
+     * @return a Command from user input from the command line
+     */
+    public Command convertStringToCommand(String userInput) {
+        String[] strInput = Utils.formatString(userInput).split(" ");
+        String command = strInput[0].toLowerCase();
+        String subject = Utils.formatString(Utils.joinStringArray(strInput, 1, strInput.length));
+        if(subject.length() ==0) { //for commands such as quit and examine
+            return new Command(command, null);
+        }
+        return new Command(command, subject);
     }
 
     /**

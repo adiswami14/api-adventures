@@ -1,18 +1,19 @@
-package student.adventure.api;
+package student.adventure;
 
-import student.adventure.*;
 import student.server.AdventureState;
 import student.server.Command;
 import student.server.GameStatus;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.*;
 
 /**
- * Main adventure class that is used to interact with the API
+ * Main adventure class that is used to interact with the API (also works with CLI)
  */
 public class Adventure {
     private Player player;  //Player object of this game
@@ -23,12 +24,19 @@ public class Adventure {
     private int id; //id for this Adventure instance
     private AdventureState state; //AdventureState instance for displaying inventory
     private HashMap<String, List<String>> commandMap; //map for commands
-    private DatabaseConnection dbConnection; //instance of DatabaseConnection to talk to database
+    private student.adventure.DatabaseConnection dbConnection; //instance of DatabaseConnection to talk to database
+    private student.adventure.IOHandler ioHandler; //IOHandler instance for game if ran on command line
+    private Scanner scanner; //scanner for it the game is ran on command line
+    private boolean isCli = true; //true if cli is running, false if api is running
 
     /**
      * Constructor for the API adventure class
      */
-    public Adventure(int id) {
+    public Adventure(int id, InputStream inputStream, OutputStream outputStream) {
+        if(inputStream == null && outputStream == null) {
+            //ensures that there are no IO streams — hence it is run on UI
+            isCli = false;
+        }
         JSONReader reader = null;
 
         try { //made a try-catch block to not interfere with AdventureService method's signature
@@ -39,7 +47,7 @@ public class Adventure {
         }
 
         //initialization of multiple variables
-        initializeGame(id);
+        initializeGame(id, inputStream, outputStream);
         run();
     }
 
@@ -75,6 +83,14 @@ public class Adventure {
     }
 
     /**
+     * Method for quitting the program
+     * Seems unnecessary, but it improves readability
+     */
+    public void quit() {
+        System.exit(0);
+    }
+
+    /**
      * @return current command issued by client
      */
     public Command getCommand() {
@@ -92,9 +108,13 @@ public class Adventure {
      * Method that is called to loop through the game
      */
     public void run(){
+        //examine();
         if(!isGameOver()) {
             handleUserInput();
             update();  //updates all of the commands and AdventureState instance
+            if(isCli && scanner.hasNextLine()) {  //if CLI is running and if scanner still has input left
+                setCommand(ioHandler.convertStringToCommand(scanner.nextLine()));
+            }
         } else {
             try {
                 dbConnection.addPlayer(getPlayer());  //adds player to the database
@@ -108,7 +128,12 @@ public class Adventure {
      * Initializes basic player fields such as name and currentRoom
      */
     private void initializePlayer(){
-        player = new Player("Placeholder");
+        if(isCli) {
+            ioHandler.println("Hey player, what's your name: ");
+            player = new Player(scanner.nextLine().trim());
+            ioHandler.print("Hey, " + player.getName() + "! ");
+        }
+        else player = new Player("Placeholder");
         player.setCurrentRoom(rooms.get(0));
         currentRoom = player.getCurrentRoom();
         player.getRoomHistory().add(currentRoom.getName()); //adds starting room to room history
@@ -122,6 +147,44 @@ public class Adventure {
             throw new IllegalArgumentException();
         }
         status.setMessage(currentRoom.getDescription());
+        examineDirections(currentRoom);
+        examineItems(currentRoom);
+    }
+
+    /**
+     * Examines possible directions for a given room
+     * @param room room we are examining
+     */
+    private void examineDirections(Room room) {
+        ioHandler.println(room.getDescription());  //String we will return for this method
+        ioHandler.print("From here, you can go: ");
+
+        ArrayList<Direction> directionsInRoom = room.getPossibleDirections();
+
+        for(int directionIndex = 0; directionIndex<directionsInRoom.size();directionIndex++) {
+            ioHandler.print(directionsInRoom.get(directionIndex).getName());
+            if(directionIndex != directionsInRoom.size()-1) {
+                ioHandler.print(", ");
+            }
+        }
+        ioHandler.println();
+    }
+
+    /**
+     * Examines possible Items for a given room
+     * @param room room we are examining
+     */
+    private void examineItems(Room room) {
+        ioHandler.print("Items: ");
+        ArrayList<Item> itemsInRoom = room.getItems();
+
+        for(int itemIndex = 0; itemIndex<itemsInRoom.size();itemIndex++) {
+            ioHandler.print(itemsInRoom.get(itemIndex).getName());
+            if(itemIndex != itemsInRoom.size()-1) {
+                ioHandler.print(", ");
+            }
+        }
+        ioHandler.println();
     }
 
     /**
@@ -129,7 +192,7 @@ public class Adventure {
      */
     private void handleUserInput() {
         Method method;
-
+        if(command.getCommandName() == null) return;
         try {   //checks for methods w/ String params
             method = this.getClass().getDeclaredMethod(command.getCommandName(), String.class);
             method.setAccessible(true);
@@ -140,7 +203,7 @@ public class Adventure {
                 method.setAccessible(true);
                 method.invoke(this);
             } catch (Exception exception) {
-                e.printStackTrace();
+                ioHandler.println("I don't understand the command \""+command.getCommandName()+"\"!");
             }
         }
     }
@@ -166,6 +229,7 @@ public class Adventure {
                 }
             }
         }
+        ioHandler.println("I can't go \""+directionName+"\"!");
     }
 
     /**
@@ -180,6 +244,7 @@ public class Adventure {
                 return;
             }
         }
+        ioHandler.println("You don't have \""+itemName+"\" in your inventory!");
     }
 
     /**
@@ -194,6 +259,23 @@ public class Adventure {
                 return;
             }
         }
+        ioHandler.println("There is no item \""+itemName+"\" in this room!");
+    }
+
+    /**
+     * Function that formats and prints out room history of player
+     */
+    private void history() {
+        ioHandler.print("Your room history: ");
+        ArrayList<String> playerRoomHistory = player.getRoomHistory();
+
+        for(int roomIndex = 0; roomIndex<playerRoomHistory.size();roomIndex++) {
+            ioHandler.print(playerRoomHistory.get(roomIndex));
+            if(roomIndex != playerRoomHistory.size()-1) {
+                ioHandler.print(", ");
+            }
+        }
+        ioHandler.println();
     }
 
     /**
@@ -206,9 +288,12 @@ public class Adventure {
             if(room.getName().toLowerCase().equals(roomName.toLowerCase())) {
                 status.setMessage("The distance between the current room and the "+room.getName()+" is "
                         +Utils.findDistance(currentLoc, room.getLocation())+" meters");
+                ioHandler.println("The distance between the current room and the "+roomName+" is "
+                        +Utils.findDistance(currentLoc, room.getLocation())+" meters");
                 return;
             }
         }
+        ioHandler.println("The room name \""+roomName+"\" is invalid");
     }
 
     /**
@@ -217,9 +302,12 @@ public class Adventure {
     private void update() {
         updateCommands();
         updateAdventureState();
-        player.setName(command.getPlayerName()); //reset name to the name of the player given by command
         status = new GameStatus(false, id, status.getMessage(), null,
                 null, state, commandMap);
+
+        if(!isCli) {
+            player.setName(command.getPlayerName()); //reset name to the name of the player given by UI command
+        }
     }
 
     /**
@@ -297,7 +385,15 @@ public class Adventure {
      * Sets initial value to all member variables
      * @param id id of the current instance of Adventure game
      */
-    private void initializeGame(int id) {
+    private void initializeGame(int id, InputStream inputStream, OutputStream outputStream) {
+        if(inputStream == null && outputStream == null) { //if game is being run on UI instead of CLI
+            ioHandler = new student.adventure.IOHandler(System.in, System.out);
+            scanner = new Scanner(System.in);
+        } else {
+            ioHandler = new student.adventure.IOHandler(inputStream, outputStream);
+            scanner = new Scanner(inputStream);
+        }
+
         this.id = id;
         initializePlayer();
         commandMap = new HashMap<>();
@@ -306,8 +402,9 @@ public class Adventure {
                 state, commandMap);
         status.setMessage("Hey there!");  //basic starting message
         command = new Command();
+
         try {
-            dbConnection = new DatabaseConnection();
+            dbConnection = new student.adventure.DatabaseConnection(); //establish a database connection
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

@@ -1,7 +1,7 @@
 package student.server;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import student.adventure.api.Adventure;
+import student.adventure.Adventure;
 import student.adventure.Item;
 
 import java.util.ArrayList;

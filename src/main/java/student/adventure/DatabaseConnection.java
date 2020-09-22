@@ -1,4 +1,4 @@
-package student.adventure.api;
+package student.adventure;
 
 import student.adventure.Player;
 import student.adventure.Utils;
@@ -20,7 +20,7 @@ public class DatabaseConnection {
      * @throws SQLException
      */
     public DatabaseConnection() throws SQLException {
-       dbConnection = DriverManager.getConnection(DATABASE_URL);
+        dbConnection = DriverManager.getConnection(DATABASE_URL);
     }
 
     /**
