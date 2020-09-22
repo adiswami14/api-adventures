@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 /**
- * Game engine class used for updating game status
+ * Game engine class used for updating game status, basically stores all variables for this game
  */
 public class Adventure {
     private Player player;  //Player object of this game
@@ -24,8 +24,8 @@ public class Adventure {
     private int id; //id for this Adventure instance
     private AdventureState state; //AdventureState instance for displaying inventory
     private HashMap<String, List<String>> commandMap; //map for commands
-    private student.adventure.DatabaseConnection dbConnection; //instance of DatabaseConnection to talk to database
-    private student.adventure.IOHandler ioHandler; //IOHandler instance for game if ran on command line
+    private DatabaseConnection dbConnection; //instance of DatabaseConnection to talk to database
+    private IOHandler ioHandler; //IOHandler instance for game if ran on command line
     private Scanner scanner; //scanner for it the game is ran on command line
     private Updater updater; //Updater instance for this game instance
     private boolean isCli = true; //true if cli is running, false if api is running (defaults to true)
@@ -34,19 +34,6 @@ public class Adventure {
      * Constructor for the API adventure class
      */
     public Adventure(int id, InputStream inputStream, OutputStream outputStream) {
-        if(inputStream == null && outputStream == null) {
-            //ensures that there are no IO streams — hence it is run on UI
-            isCli = false;
-        }
-        JSONReader reader = null;
-
-        try { //made a try-catch block to not interfere with AdventureService method's signature
-            reader = new JSONReader(new File("src/main/resources/data/Data.json"));
-            this.rooms = reader.getGame().getRooms();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         //initialization of multiple variables
         initializeGame(id, inputStream, outputStream);
         run();
@@ -104,20 +91,19 @@ public class Adventure {
     }
 
     /**
+     * @return IOHandler instance of this game
+     */
+    public IOHandler getIoHandler() {
+        return ioHandler;
+    }
+
+    /**
      * Sets command given by client to current command issued to the game
      * @param command the command passed in by the client
      */
     public void setCommand(Command command){
         this.command = command;
         run(); //acts as a loop — ran every time a new command is called
-    }
-
-    /**
-     * Method for quitting the program
-     * Seems unnecessary, but it improves readability
-     */
-    public void quit() {
-        System.exit(0);
     }
 
     /**
@@ -152,21 +138,21 @@ public class Adventure {
      * Method that is called to loop through the game
      */
     public void run(){
-        //examine();
         if(!isGameOver()) {
             updater = new Updater(this); //keep updating updater with current adventure instance
             //keeps updating game with up-to-date variables
             handleUserInput();
             updater.update();  //updates all of the commands and AdventureState instance
-            if(isCli && scanner.hasNextLine()) {  //if CLI is running and if scanner still has input left
+            if(isCli && scanner.hasNextLine()) {
+                //if CLI is running and if scanner still has input left while game is still running
                 setCommand(ioHandler.convertStringToCommand(scanner.nextLine()));
             }
         } else {
-            /*try {
+            try {
                 dbConnection.addPlayer(getPlayer());  //adds player to the database
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
-            }*/
+            }
         }
     }
 
@@ -177,12 +163,36 @@ public class Adventure {
         if(isCli) {
             ioHandler.println("Hey player, what's your name: ");
             player = new Player(scanner.nextLine().trim());
-            ioHandler.print("Hey, " + player.getName() + "! ");
+            ioHandler.println("Hey, " + player.getName() + "! ");
         }
         else player = new Player("Placeholder");
         player.setCurrentRoom(rooms.get(0));
         currentRoom = player.getCurrentRoom();
         player.getRoomHistory().add(currentRoom.getName()); //adds starting room to room history
+    }
+
+    /**
+     * Runs certain functions according to the string passed in
+     */
+    public void handleUserInput() {
+        Method method;
+        if (command.getCommandName() == null) {
+            return;
+        }
+
+        try {   //checks for methods w/ String params
+            method = this.getClass().getDeclaredMethod(command.getCommandName(), String.class);
+            method.setAccessible(true);
+            method.invoke(this, Utils.formatString(command.getCommandValue()));
+        } catch (Exception e) {
+            try { //this is for methods that don't take in any params (i.e. examine(), quit())
+                method = this.getClass().getDeclaredMethod(command.getCommandName(), null);
+                method.setAccessible(true);
+                method.invoke(this);
+            } catch (Exception exception) {
+                ioHandler.println("I don't understand the command \"" + command.getCommandName() + "\"!");
+            }
+        }
     }
 
     /**
@@ -231,27 +241,6 @@ public class Adventure {
             }
         }
         ioHandler.println();
-    }
-
-    /**
-     * Runs certain functions according to the string passed in
-     */
-    private void handleUserInput() {
-        Method method;
-        if(command.getCommandName() == null) return;
-        try {   //checks for methods w/ String params
-            method = this.getClass().getDeclaredMethod(command.getCommandName(), String.class);
-            method.setAccessible(true);
-            method.invoke(this, Utils.formatString(command.getCommandValue()));
-        } catch(Exception e) {
-            try { //this is for methods that don't take in any params (i.e. examine(), quit())
-                method = this.getClass().getDeclaredMethod(command.getCommandName(), null);
-                method.setAccessible(true);
-                method.invoke(this);
-            } catch (Exception exception) {
-                ioHandler.println("I don't understand the command \""+command.getCommandName()+"\"!");
-            }
-        }
     }
 
     /**
@@ -343,32 +332,49 @@ public class Adventure {
     }
 
     /**
+     * Method for quitting the program
+     * Seems unnecessary, but it improves readability
+     */
+    private void quit() {
+        System.exit(0);
+    }
+
+    /**
      * Sets initial value to all member variables
      * @param id id of the current instance of Adventure game
      */
     private void initializeGame(int id, InputStream inputStream, OutputStream outputStream) {
-        if(inputStream == null && outputStream == null) { //if game is being run on UI instead of CLI
+        if(inputStream == null && outputStream == null) {
+            //ensures that there are no IO streams — hence it is run on UI
+            isCli = false;
             ioHandler = new student.adventure.IOHandler(System.in, System.out);
             scanner = new Scanner(System.in);
         } else {
             ioHandler = new student.adventure.IOHandler(inputStream, outputStream);
             scanner = new Scanner(inputStream);
         }
+        JSONReader reader = null;
+
+        try { //made a try-catch block to not interfere with AdventureService method's signature
+            reader = new JSONReader(new File("src/main/resources/data/Data.json"));
+            this.rooms = reader.getGame().getRooms();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         this.id = id;
         initializePlayer();
         commandMap = new HashMap<>();
         state = new AdventureState(this);
-        status = new GameStatus(false, id, "", null, null,
+        status = new GameStatus(false, id, currentRoom.getDescription(), null, null,
                 state, commandMap);
-        status.setMessage("Hey there!");  //basic starting message
         command = new Command();
         updater = new Updater(this);
 
-        /*try {
+        try {
             dbConnection = new student.adventure.DatabaseConnection(); //establish a database connection
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-        }*/
+        }
     }
 }

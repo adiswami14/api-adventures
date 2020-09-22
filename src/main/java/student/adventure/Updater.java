@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Class made for the sole purpose of updating variables in game engine
+ */
 public class Updater {
     private Adventure adventure; //instance of game engine
     private Player player; //player instance of the game engine
@@ -20,7 +23,6 @@ public class Updater {
         player = adventure.getPlayer();
         commandMap = adventure.getCommandMap();
     }
-
 
     /**
      * Updates commands, adventure state, and game status of the game
@@ -102,7 +104,7 @@ public class Updater {
     }
 
     /**
-     * update AdventureState instance by updating inventory and room history changes
+     * Update AdventureState instance by updating inventory and room history changes
      */
     private void updateAdventureState() {
         adventure.setState(new AdventureState(adventure));

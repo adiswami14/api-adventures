@@ -7,9 +7,9 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        /*HttpServer server = AdventureServer.createServer(AdventureResource.class);
-        server.start();*/
-        Adventure adventure = new Adventure(0, System.in, System.out);
-        adventure.run();
+        HttpServer server = AdventureServer.createServer(AdventureResource.class);
+        server.start();
+        /*Adventure adventure = new Adventure(0, System.in, System.out);
+        adventure.run(); */
     }
 }
