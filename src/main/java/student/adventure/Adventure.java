@@ -91,13 +91,6 @@ public class Adventure {
     }
 
     /**
-     * @return IOHandler instance of this game
-     */
-    public IOHandler getIoHandler() {
-        return ioHandler;
-    }
-
-    /**
      * Sets command given by client to current command issued to the game
      * @param command the command passed in by the client
      */
