@@ -307,7 +307,7 @@ public class Adventure {
     }
 
     /**
-     * Function that gives distance to room that is typed in
+     * Function that gives distance to room that is typed in, solely for UI
      */
     private void distanceTo(String roomName) {
         Location currentLoc = currentRoom.getLocation();
